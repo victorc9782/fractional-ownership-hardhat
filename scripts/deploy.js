@@ -9,9 +9,11 @@ const hardhat = require("hardhat");
 async function main() {
     const totalShares = 100;
     const sharePrice = 10;
+    const name = "Happy House"
+    const description = "Your best home ever in the world!"
 
     const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
-    const fractionalOwnership = await FractionalOwnership.deploy(totalShares, sharePrice);
+    const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice);
 
     await fractionalOwnership.deployed();
 

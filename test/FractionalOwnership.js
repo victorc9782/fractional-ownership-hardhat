@@ -8,15 +8,17 @@ describe("FractionalOwnership", function() {
 
     async function deployNewFractionalOwnership() {
         const totalShares = 100;
-        const price = 10;
+        const sharePrice = 10;
+        const name = "Happy House"
+        const description = "Your best home ever in the world!"
 
         // Contracts are deployed using the first signer/account by default
         const [owner, userA, userB] = await ethers.getSigners();
 
         const FractionalOwnership = await ethers.getContractFactory("FractionalOwnership");
-        const fractionalOwnership = await FractionalOwnership.deploy(totalShares, price);
+        const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice);
 
-        return { fractionalOwnership, totalShares, price, owner, userA, userB };
+        return { fractionalOwnership, name, description, totalShares, sharePrice, owner, userA, userB };
     }
 
     // beforeEach(async function() {
@@ -27,16 +29,18 @@ describe("FractionalOwnership", function() {
     // });
 
     it("should deploy with correct initial values", async function() {
-        const { fractionalOwnership, owner, totalShares, price } = await loadFixture(deployNewFractionalOwnership);
-        expect(await fractionalOwnership.owner()).to.equal(owner.address);
-        expect(await fractionalOwnership.totalShares()).to.equal(totalShares);
-        expect(await fractionalOwnership.sharePrice()).to.equal(price);
+        const { fractionalOwnership, name, description, owner, totalShares, sharePrice } = await loadFixture(deployNewFractionalOwnership);
+        expect(await fractionalOwnership.getOwner()).to.equal(owner.address);
+        expect(await fractionalOwnership.getName()).to.equal(name);
+        expect(await fractionalOwnership.getDescription()).to.equal(description);
+        expect(await fractionalOwnership.getTotalShares()).to.equal(totalShares);
+        expect(await fractionalOwnership.getSharePrice()).to.equal(sharePrice);
     });
 
     it("should allow users to buy shares", async function() {
         const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
-        expect(await fractionalOwnership.shares(userA.address)).to.equal(5);
+        expect(await fractionalOwnership.getHoldingShares(userA.address)).to.equal(5);
     });
 
     it("should prevent users from buying more shares than available", async function() {
@@ -55,6 +59,6 @@ describe("FractionalOwnership", function() {
         const { fractionalOwnership, userA, userB } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
         await fractionalOwnership.connect(userA).sellShares(2);
-        expect(await fractionalOwnership.shares(userA.address)).to.equal(3);
+        expect(await fractionalOwnership.getHoldingShares(userA.address)).to.equal(3);
     });
 });
