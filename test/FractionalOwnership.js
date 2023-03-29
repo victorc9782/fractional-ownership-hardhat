@@ -40,7 +40,7 @@ describe("FractionalOwnership", function() {
     it("should allow users to buy shares", async function() {
         const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
-        expect(await fractionalOwnership.getHoldingShares(userA.address)).to.equal(5);
+        expect(await fractionalOwnership.getOwningShares(userA.address)).to.equal(5);
     });
 
     it("should prevent users from buying more shares than available", async function() {
@@ -59,6 +59,6 @@ describe("FractionalOwnership", function() {
         const { fractionalOwnership, userA, userB } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
         await fractionalOwnership.connect(userA).sellShares(2);
-        expect(await fractionalOwnership.getHoldingShares(userA.address)).to.equal(3);
+        expect(await fractionalOwnership.getOwningShares(userA.address)).to.equal(3);
     });
 });

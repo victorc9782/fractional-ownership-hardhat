@@ -56,7 +56,7 @@ contract FractionalOwnership {
     function getRemainingShares() public view returns (uint256) {
         return _remainingShares;
     }
-    function getHoldingShares(address address_) public view returns (uint256) {
+    function getOwningShares(address address_) public view returns (uint256) {
         return _shares[address_];
     }
 
