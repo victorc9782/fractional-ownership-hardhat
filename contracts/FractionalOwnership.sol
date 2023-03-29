@@ -32,7 +32,7 @@ contract FractionalOwnership {
             _approvedBuyers[approvedBuyers[i]] = true;
         }
     }
-    function getInfo() public view returns (Info memory) {
+    function getInfo(address buyerAddress) public view returns (Info memory) {
         return
             Info({
                 owner: _owner,
@@ -41,7 +41,7 @@ contract FractionalOwnership {
                 totalShares: _totalShares,
                 sharePrice: _sharePrice,
                 remainingShares: _remainingShares,
-                approvedBuy: _approvedBuyers[msg.sender]
+                approvedBuy: _approvedBuyers[buyerAddress]
             });
     }
 

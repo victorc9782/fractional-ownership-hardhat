@@ -11,9 +11,12 @@ async function main() {
     const sharePrice = 10;
     const name = "Happy House"
     const description = "Your best home ever in the world!"
+    const approvedBuyers = [
+        '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+    ];
 
     const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
-    const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice);
+    const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice, approvedBuyers);
 
     await fractionalOwnership.deployed();
 
