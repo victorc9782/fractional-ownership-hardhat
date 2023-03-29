@@ -8,6 +8,7 @@ contract FractionalOwnership {
     uint256 private _sharePrice;
     uint256 private _remainingShares;
     mapping (address => uint256) private _shares;
+    mapping (address => bool) private _approvedBuyers;
 
     struct Info {
         address owner;
@@ -16,6 +17,7 @@ contract FractionalOwnership {
         uint256 totalShares;
         uint256 sharePrice;
         uint256 remainingShares;
+        bool approvedBuy;
     }
 
     constructor(string memory name, string memory description, uint256 totalShares, uint256 sharePrice) {
@@ -34,7 +36,8 @@ contract FractionalOwnership {
                 description: _description,
                 totalShares: _totalShares,
                 sharePrice: _sharePrice,
-                remainingShares: _remainingShares
+                remainingShares: _remainingShares,
+                approvedBuy: _approvedBuyers[msg.sender]
             });
     }
 
@@ -60,7 +63,7 @@ contract FractionalOwnership {
         return _shares[address_];
     }
 
-    function buyShares(uint256 _numShares) public payable {
+    function buyShares(uint256 _numShares) public payable onlyApprovedBuyers {
         require(msg.value == _numShares * _sharePrice, "Incorrect amount sent");
         require(_numShares <= _remainingShares, "Not enough shares available");
         
@@ -68,11 +71,37 @@ contract FractionalOwnership {
         _remainingShares -= _numShares;
     }
 
-    function sellShares(uint256 _numShares) public {
+    function sellShares(uint256 _numShares) public onlyApprovedBuyers{
         require(_numShares <= _shares[msg.sender], "Not enough shares to sell");
 
         _shares[msg.sender] -= _numShares;
         _remainingShares += _numShares;
         payable(msg.sender).transfer(_numShares * _sharePrice);
+    }
+
+    function addApprovedBuyers(address[] calldata toAddAddresses) 
+    external onlyOwner
+    {
+        for (uint i = 0; i < toAddAddresses.length; i++) {
+            _approvedBuyers[toAddAddresses[i]] = true;
+        }
+    }
+
+    function removeFromApprovedBuyers(address[] calldata toRemoveAddresses)
+    external onlyOwner
+    {
+        for (uint i = 0; i < toRemoveAddresses.length; i++) {
+            delete _approvedBuyers[toRemoveAddresses[i]];
+        }
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Only owner can call this function");
+        _;
+    }
+
+    modifier onlyApprovedBuyers(){
+        require(_approvedBuyers[msg.sender], "Only Approved Buyers Can Trade");
+        _;
     }
 }
