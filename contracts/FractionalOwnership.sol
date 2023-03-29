@@ -20,13 +20,17 @@ contract FractionalOwnership {
         bool approvedBuy;
     }
 
-    constructor(string memory name, string memory description, uint256 totalShares, uint256 sharePrice) {
+    constructor(string memory name, string memory description, uint256 totalShares, uint256 sharePrice, address[] memory approvedBuyers) {
         _owner = msg.sender;
         _name = name;
         _description = description;
         _totalShares = totalShares;
         _sharePrice = sharePrice;
         _remainingShares = _totalShares;
+
+        for (uint i = 0; i < approvedBuyers.length; i++) {
+            _approvedBuyers[approvedBuyers[i]] = true;
+        }
     }
     function getInfo() public view returns (Info memory) {
         return

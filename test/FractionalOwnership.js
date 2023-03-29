@@ -16,7 +16,7 @@ describe("FractionalOwnership", function() {
         const [owner, userA, userB] = await ethers.getSigners();
 
         const FractionalOwnership = await ethers.getContractFactory("FractionalOwnership");
-        const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice);
+        const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice, [userA.address]);
 
         return { fractionalOwnership, name, description, totalShares, sharePrice, owner, userA, userB };
     }
@@ -38,40 +38,36 @@ describe("FractionalOwnership", function() {
     });
 
     it("should allow users to buy shares", async function() {
-        const { fractionalOwnership, owner, userA } = await loadFixture(deployNewFractionalOwnership);
-        await fractionalOwnership.connect(owner).addApprovedBuyers([userA.address]);
+        const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
         expect(await fractionalOwnership.getOwningShares(userA.address)).to.equal(5);
     });
 
     it("should prevent users from buying more shares than available", async function() {
-        const { fractionalOwnership, owner, userA, userB } = await loadFixture(deployNewFractionalOwnership);
-        await fractionalOwnership.connect(owner).addApprovedBuyers([userA.address, userB.address]);
+        const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(50, { value: 500 });
-        await expect(fractionalOwnership.connect(userB).buyShares(51, { value: 510 })).to.be.revertedWith("Not enough shares available");
+        await expect(fractionalOwnership.connect(userA).buyShares(51, { value: 510 })).to.be.revertedWith("Not enough shares available");
     });
 
     it("should prevent users from selling more shares than they own", async function() {
-        const { fractionalOwnership, owner, userA } = await loadFixture(deployNewFractionalOwnership);
-        await fractionalOwnership.connect(owner).addApprovedBuyers([userA.address]);
+        const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
         await expect(fractionalOwnership.connect(userA).sellShares(10)).to.be.revertedWith("Not enough shares to sell");
     });
 
     it("should allow users to sell shares", async function() {
-        const { fractionalOwnership, owner, userA } = await loadFixture(deployNewFractionalOwnership);
-        await fractionalOwnership.connect(owner).addApprovedBuyers([userA.address]);
+        const { fractionalOwnership, userA } = await loadFixture(deployNewFractionalOwnership);
         await fractionalOwnership.connect(userA).buyShares(5, { value: 50 });
         await fractionalOwnership.connect(userA).sellShares(2);
         expect(await fractionalOwnership.getOwningShares(userA.address)).to.equal(3);
     });
     
     it("should prevent not approved users to buy shares", async function() {
-        const { fractionalOwnership, userA} = await loadFixture(deployNewFractionalOwnership);
-        await expect(fractionalOwnership.connect(userA).buyShares(5, { value: 50 })).to.be.revertedWith("Only Approved Buyers Can Trade");
+        const { fractionalOwnership, userB} = await loadFixture(deployNewFractionalOwnership);
+        await expect(fractionalOwnership.connect(userB).buyShares(5, { value: 50 })).to.be.revertedWith("Only Approved Buyers Can Trade");
     });
     it("should prevent not approved users to buy shares", async function() {
-        const { fractionalOwnership, userA} = await loadFixture(deployNewFractionalOwnership);
-        await expect(fractionalOwnership.connect(userA).sellShares(5)).to.be.revertedWith("Only Approved Buyers Can Trade");
+        const { fractionalOwnership, userB} = await loadFixture(deployNewFractionalOwnership);
+        await expect(fractionalOwnership.connect(userB).sellShares(5)).to.be.revertedWith("Only Approved Buyers Can Trade");
     });
 });
