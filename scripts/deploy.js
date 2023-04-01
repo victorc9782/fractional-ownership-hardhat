@@ -11,12 +11,13 @@ async function main() {
     const sharePrice = 10;
     const name = "Happy House"
     const description = "Your best home ever in the world!"
+    const propertyAddress = "1 Hong Kong Road, HK Island"
     const approvedBuyers = [
-        '0x70997970C51812dc3A010C7d01b50e0d17dc79C8'
+        '0xca7AF68134ED9840027d134B47Ec3ab9cDb852F4'
     ];
 
     const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
-    const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice, approvedBuyers);
+    const fractionalOwnership = await FractionalOwnership.deploy(name, description, propertyAddress, totalShares, sharePrice, approvedBuyers);
 
     await fractionalOwnership.deployed();
 

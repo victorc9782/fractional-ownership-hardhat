@@ -11,14 +11,15 @@ describe("FractionalOwnership", function() {
         const sharePrice = 10;
         const name = "Happy House"
         const description = "Your best home ever in the world!"
+        const propertyAddress = "1 Hong Kong Road, HK Island"
 
         // Contracts are deployed using the first signer/account by default
         const [owner, userA, userB] = await ethers.getSigners();
 
         const FractionalOwnership = await ethers.getContractFactory("FractionalOwnership");
-        const fractionalOwnership = await FractionalOwnership.deploy(name, description, totalShares, sharePrice, [userA.address]);
+        const fractionalOwnership = await FractionalOwnership.deploy(name, description, propertyAddress, totalShares, sharePrice, [userA.address]);
 
-        return { fractionalOwnership, name, description, totalShares, sharePrice, owner, userA, userB };
+        return { fractionalOwnership, name, description, propertyAddress, totalShares, sharePrice, owner, userA, userB };
     }
 
     // beforeEach(async function() {
@@ -29,10 +30,11 @@ describe("FractionalOwnership", function() {
     // });
 
     it("should deploy with correct initial values", async function() {
-        const { fractionalOwnership, name, description, owner, totalShares, sharePrice } = await loadFixture(deployNewFractionalOwnership);
+        const { fractionalOwnership, name, description, propertyAddress, owner, totalShares, sharePrice } = await loadFixture(deployNewFractionalOwnership);
         expect(await fractionalOwnership.getOwner()).to.equal(owner.address);
         expect(await fractionalOwnership.getName()).to.equal(name);
         expect(await fractionalOwnership.getDescription()).to.equal(description);
+        expect(await fractionalOwnership.getPropertyAddress()).to.equal(propertyAddress);
         expect(await fractionalOwnership.getTotalShares()).to.equal(totalShares);
         expect(await fractionalOwnership.getSharePrice()).to.equal(sharePrice);
     });

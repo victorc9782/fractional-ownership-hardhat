@@ -4,6 +4,7 @@ contract FractionalOwnership {
     address private _owner;
     string private _name;
     string private _description;
+    string private _propertyAddress;
     uint256 private _totalShares;
     uint256 private _sharePrice;
     uint256 private _remainingShares;
@@ -14,16 +15,18 @@ contract FractionalOwnership {
         address owner;
         string name;
         string description;
+        string propertyAddress;
         uint256 totalShares;
         uint256 sharePrice;
         uint256 remainingShares;
         bool approvedBuy;
     }
 
-    constructor(string memory name, string memory description, uint256 totalShares, uint256 sharePrice, address[] memory approvedBuyers) {
+    constructor(string memory name, string memory description, string memory propertyAddress, uint256 totalShares, uint256 sharePrice, address[] memory approvedBuyers) {
         _owner = msg.sender;
         _name = name;
         _description = description;
+        _propertyAddress = propertyAddress;
         _totalShares = totalShares;
         _sharePrice = sharePrice;
         _remainingShares = _totalShares;
@@ -38,6 +41,7 @@ contract FractionalOwnership {
                 owner: _owner,
                 name: _name,
                 description: _description,
+                propertyAddress: _propertyAddress,
                 totalShares: _totalShares,
                 sharePrice: _sharePrice,
                 remainingShares: _remainingShares,
@@ -53,6 +57,9 @@ contract FractionalOwnership {
     }
     function getDescription() public view returns (string memory) {
         return _description;
+    }
+    function getPropertyAddress() public view returns (string memory) {
+        return _propertyAddress;
     }
     function getTotalShares() public view returns (uint256) {
         return _totalShares;
