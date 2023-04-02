@@ -7,8 +7,9 @@
 const hardhat = require("hardhat");
 
 async function main() {
+    const walletAddress = '0xca7AF68134ED9840027d134B47Ec3ab9cDb852F4'
     const approvedBuyers = [
-        '0xca7AF68134ED9840027d134B47Ec3ab9cDb852F4'
+        walletAddress
     ];
     const properties = [
         { 
@@ -23,7 +24,7 @@ async function main() {
             name: "HODL Buildings",
             description: "Cosmic observatory with a 360-degree view of the galaxy.",
             propertyAddress: "124 Ethereum Avenue",
-            totalShares: 10000,
+            totalShares: 1000,
             sharePrice: 20,
             approvedBuyers: approvedBuyers
         },
@@ -31,7 +32,7 @@ async function main() {
             name: "FOMO House",
             description: "Stylish urban apartment with a rooftop pool and fitness center.",
             propertyAddress: "420 Doge Lane",
-            totalShares: 100000,
+            totalShares: 10000,
             sharePrice: 1,
             approvedBuyers: approvedBuyers
         },
@@ -45,6 +46,15 @@ async function main() {
         },
 
     ]
+
+    const FractionalOwnershipFactory = await hardhat.ethers.getContractFactory("FractionalOwnershipFactory");
+    const fractionalOwnershipFactory = await FractionalOwnershipFactory.deploy();
+    console.log(
+        `Deployed fractionalOwnershipFactory to ${fractionalOwnershipFactory.address}`
+    );
+
+    const contractAddressList = [];
+    fractionalOwnershipFactory.getFractionalOwnershipArray()
     for await (const property of properties) {
     
         const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
@@ -57,7 +67,15 @@ async function main() {
         console.log(
             `Deployed to ${fractionalOwnership.address}`
         );
+
+        contractAddressList.push(fractionalOwnership.address)
+
+        const info = await fractionalOwnership.getInfo(walletAddress);
+
+        console.log(info)
+        
     }
+    console.log(contractAddressList)
 }
 
 // We recommend this pattern to be able to use async/await everywhere
