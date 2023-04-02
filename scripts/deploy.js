@@ -7,23 +7,57 @@
 const hardhat = require("hardhat");
 
 async function main() {
-    const totalShares = 100;
-    const sharePrice = 10;
-    const name = "Happy House"
-    const description = "Your best home ever in the world!"
-    const propertyAddress = "1 Hong Kong Road, HK Island"
     const approvedBuyers = [
         '0xca7AF68134ED9840027d134B47Ec3ab9cDb852F4'
     ];
+    const properties = [
+        { 
+            name: "LFG Tower",
+            description: "Cozy 2-bedroom apartment with a balcony and stunning city views.",
+            propertyAddress: "21 Satoshi Street",
+            totalShares: 100,
+            sharePrice: 10,
+            approvedBuyers: approvedBuyers
+        },
+        { 
+            name: "HODL Buildings",
+            description: "Cosmic observatory with a 360-degree view of the galaxy.",
+            propertyAddress: "124 Ethereum Avenue",
+            totalShares: 10000,
+            sharePrice: 20,
+            approvedBuyers: approvedBuyers
+        },
+        { 
+            name: "FOMO House",
+            description: "Stylish urban apartment with a rooftop pool and fitness center.",
+            propertyAddress: "420 Doge Lane",
+            totalShares: 100000,
+            sharePrice: 1,
+            approvedBuyers: approvedBuyers
+        },
+        { 
+            name: "DYOR Court",
+            description: "Newly renovated 3-bedroom townhouse with a garage and outdoor patio.",
+            propertyAddress: "100 Moon Road",
+            totalShares: 12345,
+            sharePrice: 5,
+            approvedBuyers: approvedBuyers
+        },
 
-    const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
-    const fractionalOwnership = await FractionalOwnership.deploy(name, description, propertyAddress, totalShares, sharePrice, approvedBuyers);
-
-    await fractionalOwnership.deployed();
-
-    console.log(
-        `Deployed to ${fractionalOwnership.address}`
-    );
+    ]
+    for await (const property of properties) {
+    
+        const FractionalOwnership = await hardhat.ethers.getContractFactory("FractionalOwnership");
+        
+        console.log(property)
+        const fractionalOwnership = await FractionalOwnership.deploy(property.name, property.description, property.propertyAddress, property.totalShares, property.sharePrice, property.approvedBuyers);
+    
+        await fractionalOwnership.deployed();
+    
+        console.log(
+            `Deployed to ${fractionalOwnership.address}`
+        );
+    }
 }
 
 // We recommend this pattern to be able to use async/await everywhere
